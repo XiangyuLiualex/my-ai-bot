@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 助手</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .chat-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>欢迎来到 AI 助手网站</h1>
+    <p>点击右下角按钮与 AI 助手对话！</p>
+
+    <div class="chat-container">
+        <!-- Coze AI Chat SDK -->
+        <!-- <script src="https://chat-sdk.coze.com/sdk.js"></script>
+        <script>
+            CozeSDK.init({
+                botId: "你的 Coze 机器人 ID",
+                containerId: "coze-chat",
+                theme: "light"
+            });
+        </script> -->
+        <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.5/libs/cn/index.js"></script>
+        <script>
+            new CozeWebSDK.WebChatClient({
+            config: {
+            bot_id: '7480661052398092307',
+            },
+            componentProps: {
+            title: 'Coze',
+            },
+            auth: {
+            type: 'token',
+            token: 'pat_********',
+            onRefreshToken: function () {
+                return 'pat_********'
+            }
+            }
+            });
+        </script>
+    </div>
+</body>
+</html>
