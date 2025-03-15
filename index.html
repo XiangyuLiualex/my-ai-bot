@@ -21,28 +21,32 @@
 
     <div class="chat-container">
         <!-- Coze AI Chat SDK -->
-        <!-- <script src="https://chat-sdk.coze.com/sdk.js"></script>
-        <script>
-            CozeSDK.init({
-                botId: "你的 Coze 机器人 ID",
-                containerId: "coze-chat",
-                theme: "light"
-            });
-        </script> -->
         <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.5/libs/oversea/index.js"></script>
         <script>
+          // 生成或获取本地存储的会话 ID
+          function getOrCreateConversationId() {
+              let storedId = localStorage.getItem('conversation_id');
+              if (!storedId) {
+                  storedId = 'session-' + Math.random().toString(36).substr(2, 9);
+                  localStorage.setItem('conversation_id', storedId);
+              }
+              return storedId;
+          }
+
+          // 初始化 Coze AI 助手
           new CozeWebSDK.WebChatClient({
             config: {
-              bot_id: '7481792028402565175',
+              bot_id: '7481792028402565175',  // 替换为你的 bot_id
+              conversation_id: getOrCreateConversationId(),  // 保证本地会话 ID
             },
             componentProps: {
               title: 'Coze',
             },
             auth: {
               type: 'token',
-              token: 'pat_BfwHjni97u9d3IrK07CuqConrRK6nIznubI2Y3o5QEDzA9kbtqA77awsGlDgoOC3',
+              token: 'pat_BfwHjni97u9d3IrK07CuqConrRK6nIznubI2Y3o5QEDzA9kbtqA77awsGlDgoOC3', // 替换为你的 API Token
               onRefreshToken: function () {
-                return 'pat_BfwHjni97u9d3IrK07CuqConrRK6nIznubI2Y3o5QEDzA9kbtqA77awsGlDgoOC3'
+                return 'pat_BfwHjni97u9d3IrK07CuqConrRK6nIznubI2Y3o5QEDzA9kbtqA77awsGlDgoOC3'; // 确保 Token 及时更新
               }
             }
           });
