@@ -1,0 +1,40 @@
+// api/chat.js
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+  
+  // 从请求中获取会话和消息信息
+  const { conversation_id, user_id, message } = req.body;
+  if (!conversation_id || !user_id || !message) {
+    return res.status(400).json({ error: 'Missing parameters' });
+  }
+  
+  // 从环境变量中读取 Coze 的配置
+  const botId = process.env.COZE_BOT_ID;
+  const apiToken = process.env.COZE_API_TOKEN;
+  
+  // Coze API 端点（请根据官方文档替换为正确的 URL）
+  const cozeApiUrl = "https://api.coze.com/v1/chat";
+  
+  try {
+    const response = await fetch(cozeApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiToken}`
+      },
+      body: JSON.stringify({
+        bot_id: botId,
+        conversation_id,  // 使用前端传入的会话ID
+        user_id,          // 使用前端传入的用户ID
+        message,
+      })
+    });
+    
+    const data = await response.json();
+    return res.status(200).json(data);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+}

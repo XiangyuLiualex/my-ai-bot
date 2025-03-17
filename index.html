@@ -1,73 +1,61 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 助手</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-        }
-        .chat-container {
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 助手</title>
+  <style>
+      body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+      .chat-container { margin-top: 20px; }
+      #chat-log { margin-top: 20px; text-align: left; max-width: 600px; margin: 20px auto; }
+      #chat-log p { margin: 5px 0; }
+  </style>
 </head>
 <body>
-    <h1>欢迎来到 AI 助手网站</h1>
-    <p>点击右下角按钮与 AI 助手对话！</p>
+  <h1>欢迎来到 AI 助手网站</h1>
+  <p>点击下方按钮开始对话（每次都是全新的会话哦）！</p>
 
-    <div class="chat-container">
-        <!-- Coze AI Chat SDK -->
-        <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.5/libs/oversea/index.js"></script>
-        <script>
-            // 生成唯一 ID
-            function generateUniqueId(prefix) {
-                return prefix + '-' + Math.random().toString(36).substr(2, 9);
-            }
+  <div class="chat-container">
+      <input id="message" type="text" placeholder="请输入消息" style="width: 300px;"/>
+      <button id="send">发送</button>
+      <div id="chat-log"></div>
+  </div>
 
-            // 每次访问都生成新的 `user_id`
-            function generateNewUserId() {
-                return generateUniqueId('user');
-            }
+  <script>
+      // 生成唯一 ID 的简单方法
+      function generateUniqueId(prefix) {
+          return prefix + '-' + Math.random().toString(36).substr(2, 9);
+      }
 
-            // 获取或创建会话 ID（保证刷新页面会话重置）
-            function getOrCreateConversationId() {
-                let storedId = sessionStorage.getItem('conversation_id');
-                if (!storedId) {
-                    storedId = generateUniqueId('session');
-                    sessionStorage.setItem('conversation_id', storedId);
-                }
-                return storedId;
-            }
+      // 每次加载页面，生成新的会话ID和用户ID
+      const conversation_id = generateUniqueId('session');
+      const user_id = generateUniqueId('user');
 
-            // 生成 `user_id`，每次访问都不同
-            const userId = generateNewUserId();
-
-            // 初始化 Coze AI 助手
-            const chatClient = new CozeWebSDK.WebChatClient({
-                config: {
-                    bot_id: '7481792028402565175',
-                    conversation_id: getOrCreateConversationId(), // 确保会话独立
-                    user_id: userId, // 每次访问都重新生成
-                },
-                componentProps: {
-                    title: 'Coze AI 助手',
-                },
-                auth: {
-                    type: 'token',
-                    token: 'pat_9zLSZMNPS7QTpdKACsRIgTr9jjT1oj1OvcYZ9Vabb1CBZlXSOvzZPzUpGN8vZtPY',
-                    onRefreshToken: function () {
-                        return 'pat_9zLSZMNPS7QTpdKACsRIgTr9jjT1oj1OvcYZ9Vabb1CBZlXSOvzZPzUpGN8vZtPY';
-                    }
-                }
-            });
-
-            // 强制创建新会话，防止历史记录共享
-            chatClient.resetConversation();
-        </script>
-    </div>
+      document.getElementById('send').addEventListener('click', async function() {
+          const message = document.getElementById('message').value.trim();
+          if (!message) return;
+          
+          // 显示用户消息
+          const chatLog = document.getElementById('chat-log');
+          chatLog.innerHTML += `<p><strong>我：</strong>${message}</p>`;
+          
+          // 发送请求到你的 serverless API
+          try {
+              const response = await fetch('/api/chat', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ conversation_id, user_id, message })
+              });
+              const data = await response.json();
+              // 这里假设返回的数据中有字段 reply，如果格式不同请自行调整
+              chatLog.innerHTML += `<p><strong>AI：</strong>${data.reply || JSON.stringify(data)}</p>`;
+          } catch (error) {
+              chatLog.innerHTML += `<p style="color: red;"><strong>Error：</strong>${error.message}</p>`;
+          }
+          
+          // 清空输入框
+          document.getElementById('message').value = '';
+      });
+  </script>
 </body>
 </html>
