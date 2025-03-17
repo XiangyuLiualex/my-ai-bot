@@ -13,7 +13,8 @@ export default async function handler(req, res) {
     // 2. 从环境变量读取 Client Secret
     const clientSecret = process.env.COZE_CLIENT_SECRET;
     const clientId = '1154724725632'; // 你的 OAuth App ID
-    const redirectUri = 'https://my-coze-oauth-demo.vercel.app/api/coze-callback';
+    const redirectUri = 'https://my-ai-bot-eight.vercel.app/api/coze-callback';
+
 
     // 3. POST 请求换取 access_token（JWT）
     const tokenRes = await fetch(tokenUrl, {

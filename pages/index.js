@@ -67,7 +67,7 @@ export default function HomePage() {
   // 引导用户跳转到 Coze OAuth 授权
   function handleLogin() {
     // 注意替换成你的实际回调 URL
-    const redirectUri = encodeURIComponent('https://my-coze-oauth-demo.vercel.app/api/coze-callback');
+    const redirectUri = encodeURIComponent('https://my-ai-bot-eight.vercel.app/api/coze-callback');
     // 根据海外版文档，将下面地址替换成实际的授权端点
     const authorizeUrl = `https://api.coze.com/oauth/authorize?client_id=1154724725632&redirect_uri=${redirectUri}&response_type=code&scope=openid`;
     window.location.href = authorizeUrl;
