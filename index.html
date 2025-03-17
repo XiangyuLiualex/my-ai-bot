@@ -1,105 +1,57 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Coze GPT4o Mini 测试</title>
+  <meta charset="UTF-8">
+  <title>Coze 无状态 Chat SDK 测试</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      padding: 50px;
-    }
-    .chat-container {
-      margin-top: 20px;
-    }
-    #chat-log {
-      margin-top: 20px;
-      text-align: left;
-      max-width: 600px;
-      margin: 20px auto;
-      border: 1px solid #ccc;
-      padding: 10px;
-      min-height: 200px;
-    }
-    #chat-log p {
-      margin: 5px 0;
-      white-space: pre-wrap;
-    }
-    .user-msg {
-      font-weight: bold;
-      color: #2a2a2a;
-    }
-    .ai-msg {
-      color: #007bff;
+      margin-top: 50px;
     }
   </style>
 </head>
 <body>
-  <h1>欢迎测试 Coze GPT4o Mini</h1>
-  <p>在下方输入你的问题，点击发送后查看回复</p>
+  <h1>Coze 无状态 Chat SDK 测试</h1>
+  <p>本示例尝试使用海外版 Coze Chat SDK，并随机生成 <code>conversation_id</code> / <code>user_id</code>，避免历史共享。</p>
 
-  <div class="chat-container">
-    <input
-      id="message"
-      type="text"
-      placeholder="请输入消息"
-      style="width: 300px"
-    />
-    <button id="send">发送</button>
-    <div id="chat-log"></div>
-  </div>
-
+  <!-- 引入海外版 Chat SDK 脚本 -->
+  <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.5/libs/oversea/index.js"></script>
   <script>
-    // 我们用 messages 数组来维护多轮对话历史
-    // 第一个 system 消息可以设置对AI的角色描述
-    let messages = [
-      {
-        role: "system",
-        content: "You are a helpful AI assistant, running on Coze GPT4o Mini."
+    // 随机生成 ID 的小函数
+    function randomId(prefix) {
+      return prefix + '-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    // 每次刷新页面时，生成新的会话ID & 用户ID
+    const conversationId = randomId('conv');
+    const userId = randomId('user');
+
+    // 初始化 Coze Chat SDK
+    const chatClient = new CozeWebSDK.WebChatClient({
+      config: {
+        // 这里请填入你在海外版 Coze 后台看到的 Bot ID
+        bot_id: '7481792028402565175',
+
+        // 使用随机的 conversation_id 和 user_id
+        conversation_id: conversationId,
+        user_id: userId,
+      },
+      componentProps: {
+        // Chat SDK 右下角浮窗标题
+        title: 'Coze 无状态测试',
+      },
+      auth: {
+        // 使用 token 方式鉴权
+        type: 'token',
+        // 这里请替换成你的海外版 Coze Token
+        token: 'pat_8cZrNUC6nDyy9FY3WCfGoRsQPFKM0kyQvb72HpctbbiE9yviITqEB02uiZIshoqP',
+        onRefreshToken: () => 'pat_8cZrNUC6nDyy9FY3WCfGoRsQPFKM0kyQvb72HpctbbiE9yviITqEB02uiZIshoqP'
       }
-    ];
-
-    const chatLog = document.getElementById("chat-log");
-    const inputEl = document.getElementById("message");
-    const sendBtn = document.getElementById("send");
-
-    // 点击“发送”按钮时执行
-    sendBtn.addEventListener("click", async () => {
-      const userMessage = inputEl.value.trim();
-      if (!userMessage) return;
-
-      // 将用户输入加入到 messages 中
-      messages.push({ role: "user", content: userMessage });
-
-      // 在页面上显示用户消息
-      chatLog.innerHTML += `<p class="user-msg">我：${userMessage}</p>`;
-
-      // 调用后端 API
-      try {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages })
-        });
-        const data = await response.json();
-
-        // 根据 Coze open_api/v2/chat 的返回结构
-        // 通常在 data.choices[0].message.content 中找到回复
-        const assistantReply = data.choices?.[0]?.message?.content || "（AI没有返回内容）";
-
-        // 将AI回复也加入 messages
-        messages.push({ role: "assistant", content: assistantReply });
-
-        // 显示到页面上
-        chatLog.innerHTML += `<p class="ai-msg">AI：${assistantReply}</p>`;
-      } catch (error) {
-        chatLog.innerHTML += `<p style="color:red;">Error: ${error.message}</p>`;
-      }
-
-      // 清空输入框
-      inputEl.value = "";
     });
+
+    // 重置会话，尝试清空任何默认加载的历史
+    chatClient.resetConversation();
   </script>
 </body>
 </html>
