@@ -28,32 +28,30 @@
                 return prefix + '-' + Math.random().toString(36).substr(2, 9);
             }
 
-            // 获取或创建会话 ID，存入 sessionStorage
+            // 每次访问都生成新的 `user_id`
+            function generateNewUserId() {
+                return generateUniqueId('user');
+            }
+
+            // 获取或创建会话 ID（保证刷新页面会话重置）
             function getOrCreateConversationId() {
                 let storedId = sessionStorage.getItem('conversation_id');
                 if (!storedId) {
-                    storedId = generateUniqueId('session'); // 生成唯一会话 ID
+                    storedId = generateUniqueId('session');
                     sessionStorage.setItem('conversation_id', storedId);
                 }
                 return storedId;
             }
 
-            // 获取或创建用户 ID，存入 localStorage
-            function getOrCreateUserId() {
-                let storedUserId = localStorage.getItem('user_id');
-                if (!storedUserId) {
-                    storedUserId = generateUniqueId('user'); // 生成唯一用户 ID
-                    localStorage.setItem('user_id', storedUserId);
-                }
-                return storedUserId;
-            }
+            // 生成 `user_id`，每次访问都不同
+            const userId = generateNewUserId();
 
             // 初始化 Coze AI 助手
             const chatClient = new CozeWebSDK.WebChatClient({
                 config: {
                     bot_id: '7481792028402565175',
-                    conversation_id: getOrCreateConversationId(), // 每个会话独立
-                    user_id: getOrCreateUserId(), // 识别不同用户
+                    conversation_id: getOrCreateConversationId(), // 确保会话独立
+                    user_id: userId, // 每次访问都重新生成
                 },
                 componentProps: {
                     title: 'Coze AI 助手',
@@ -67,7 +65,7 @@
                 }
             });
 
-            // 确保每个设备对话是独立的
+            // 强制创建新会话，防止历史记录共享
             chatClient.resetConversation();
         </script>
     </div>
