@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>我的Dify AI助手</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- 你可以根据需要添加自己的CSS或其他头部信息 -->
+</head>
+<body style="margin:0; padding:0;">
+  <h1 style="text-align: center; margin-top: 50px;">
+    欢迎来到我的AI助手演示页面
+  </h1>
+  <p style="text-align: center;">
+    这是一个简单的网页示例，你可以点击右下角的按钮，呼出Dify AI助手进行对话。
+  </p>
+
+  <!-- Dify 提供的嵌入脚本开始 -->
+  <script>
+    window.difyChatbotConfig = {
+      token: '1dBh6MqLHRhxWoFf'  // 这里填入你的 Dify AI token
+    }
+  </script>
+  <script
+    src="https://udify.app/embed.min.js"
+    id="1dBh6MqLHRhxWoFf"
+    defer>
+  </script>
+  <style>
+    /* 你可以根据需要自定义聊天按钮、聊天窗口的样式 */
+    #dify-chatbot-bubble-button {
+      background-color: #1C64F2 !important;
+    }
+    #dify-chatbot-bubble-window {
+      width: 24rem !important;
+      height: 40rem !important;
+    }
+  </style>
+  <!-- Dify 提供的嵌入脚本结束 -->
+
+</body>
+</html>
